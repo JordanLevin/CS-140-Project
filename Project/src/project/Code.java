@@ -43,6 +43,7 @@ public class Code {
 	public String getText(int i){
 		StringBuilder bldr = new StringBuilder();
 		String mnem = InstructionMap.mnemonics.get(getOp(i));
+		//System.out.println(i);
 		bldr.append(mnem);
 		int x = getIndirLvl(i);
 		if(x == 0 && !InstructionMap.noArgument.contains(mnem)){

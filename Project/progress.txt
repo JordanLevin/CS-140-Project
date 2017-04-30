@@ -1,0 +1,6 @@
+PROGRESS:
+
+part 1: Passes all tests
+part 2: Passes all tests
+part 3: Assembler2.java - need to complete last couple of lines maybe? not sure, wording is bad
+part 4: States.java - pretty sure its done, no tests provided
