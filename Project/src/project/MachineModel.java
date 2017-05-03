@@ -6,6 +6,9 @@ import java.util.TreeMap;
 public class MachineModel{
 	public final Map<Integer, Instruction> IMAP = new TreeMap<Integer, Instruction>();
 
+	Job[] jobs = new Job[4];
+	private Job currentJob;
+	
 	private Code code = new Code();
 	private CPU cpu = new CPU();
 	private Memory memory = new Memory();
@@ -13,6 +16,14 @@ public class MachineModel{
 
 	public MachineModel(HaltCallback callback){
 		this.callback = callback;
+		
+		//Part 5
+		for(int i = 0;i<jobs.length;i++){
+			jobs[i] = new Job();
+			jobs[i].setId(i);
+			jobs[i].setStartcodeIndex(i*Code.CODE_MAX/4);
+			jobs[i].setStartmemoryIndex(i*Memory.DATA_SIZE/4);
+		}
 		
 		//INSTRUCTION MAP entry for "NOP"
 		IMAP.put(0x0, (arg, level) ->{
@@ -170,7 +181,8 @@ public class MachineModel{
 					"Illegal indirection level in JUMP instruction");
 			}
 			if(level == 3){
-				cpu.setPCounter(arg); //not totally sure about this line
+				int arg1 = memory.getData(cpu.getMemBase()+arg); // CORRECTION
+				cpu.setPCounter(arg1 + currentJob.getStartcodeIndex());   // CORRECTION
 			} else if(level > 0) {
 				IMAP.get(0xB).execute(memory.getData(cpu.getMemBase()+arg), level-1);
 			} else {
@@ -180,6 +192,11 @@ public class MachineModel{
 		
 		//INSTRUCTION MAP entry for "JMPZ"
 		IMAP.put(0xC, (arg, level) ->{
+			//TODO fix this up probably
+			if(cpu.getAccum() == 0){
+				int arg1 = memory.getData(cpu.getMemBase()+arg); // CORRECTION
+				cpu.setPCounter(arg1 + currentJob.getStartcodeIndex());   // CORRECTION
+			}
 			if(cpu.getAccum() == 1){
 				cpu.incrPC();
 				return;
@@ -202,7 +219,7 @@ public class MachineModel{
 			callback.halt();
 		});
 		
-		
+		currentJob = jobs[0];
 		
 		
 	}
@@ -220,7 +237,23 @@ public class MachineModel{
 		return code;
 	}
 	
-	
+	public void changeToJob(int i){
+		if(i<0 || i>3){
+			throw new IllegalArgumentException();
+		}
+		else if(jobs[i].equals(getCurrentJob())){
+			
+		}
+		else{
+			getCurrentJob().setCurrentAcc(cpu.getAccum());
+			getCurrentJob().setCurrentPC(cpu.getPCounter());
+			currentJob = jobs[i];
+			cpu.setAccum(currentJob.getCurrentAcc());
+			cpu.setMemBase(currentJob.getStartmemoryIndex());
+			cpu.setPCounter(currentJob.getCurrentAcc());
+		}
+	}
+
 	public MachineModel(){
 		this(() -> System.exit(0));
 	}
@@ -251,6 +284,58 @@ public class MachineModel{
 	public void setData(int index, int value) {
 		memory.setData(index, value);
 	}
+	//delegate methods from part 5
+
+	public States getCurrentState() {
+		return currentJob.getCurrentState();
+	}
+
+	public void setCurrentState(States currentState) {
+		currentJob.setCurrentState(currentState);
+	}
+
+	public int getChangedIndex() {
+		return memory.getChangedIndex();
+	}
+	
+	public Job getCurrentJob() {
+		return currentJob;
+	}
+
+	public void setCurrentJob(Job currentJob) {
+		this.currentJob = currentJob;
+	}
+	
+	public void clearJob(){
+		memory.clear(currentJob.getStartmemoryIndex(), currentJob.getStartmemoryIndex() + Memory.DATA_SIZE/4);
+		code.clear(currentJob.getStartcodeIndex(), currentJob.getStartcodeIndex() + currentJob.getCodeSize());
+		cpu.setAccum(0);
+		cpu.setPCounter(currentJob.getStartcodeIndex());
+		currentJob.reset();
+	}
+	
+	public void step(){
+		try{
+			int pc = cpu.getPCounter();
+			//TODO make sure this inclusive/exclusive is right
+			if(pc < currentJob.getStartcodeIndex() || pc >= currentJob.getStartcodeIndex() + currentJob.getCodeSize()){
+				throw new CodeAccessException();
+			}
+			int opcode = code.getOp(pc);
+			int indirLvl = code.getIndirLvl(pc);
+			int arg = code.getArg(pc);
+			
+			IMAP.get(pc).execute(arg, indirLvl);
+			
+		} catch (Exception e){
+			callback.halt();
+			throw e;
+		}
+	}
+
+	
+
+	
 	
 	
 
