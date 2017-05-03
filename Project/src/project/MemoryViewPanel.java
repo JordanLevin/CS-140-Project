@@ -81,16 +81,24 @@ public class MemoryViewPanel implements Observer {
 	
 	@Override
 	public void update(Observable arg0, Object arg1) {
-	    for(int i = lower; i < upper; i++) {
-		int val = model.getData(i); // NEW
-		dataDecimal[i-lower].setText("" + val);  // NEW
-		String s = Integer.toHexString(val);  // NEW
-		if(val < 0)  
-			s = "-" + Integer.toHexString(-val);  // NEW
-		dataHex[i-lower].setText(s.toUpperCase());  // NEW
-	        //dataDecimal[i-lower].setText("" + model.getData(i)); // DELETE THIS LINE
-	        //dataHex[i-lower].setText(Integer.toHexString(model.getData(i))); // DELETE THIS LINE
-	    }
+//	    for(int i = lower; i < upper; i++) {
+//		int val = model.getData(i); // NEW
+//		dataDecimal[i-lower].setText("" + val);  // NEW
+//		String s = Integer.toHexString(val);  // NEW
+//		if(val < 0)  
+//			s = "-" + Integer.toHexString(-val);  // NEW
+//		dataHex[i-lower].setText(s.toUpperCase());  // NEW
+//	        //dataDecimal[i-lower].setText("" + model.getData(i)); // DELETE THIS LINE
+//	        //dataHex[i-lower].setText(Integer.toHexString(model.getData(i))); // DELETE THIS LINE
+//	    }
+		for(int i = lower; i < upper; i++) {
+			int val = model.getData(i);
+			dataDecimal[i-lower].setText("" + val);
+			String s = Integer.toHexString(val);
+			if(val < 0)  
+				s = "-" + Integer.toHexString(-val);
+			dataHex[i-lower].setText(s.toUpperCase());
+		}
 	    if(arg1 != null && arg1.equals("Clear")) {
 	        if(lower <= previousColor && previousColor < upper) {
 	            dataDecimal[previousColor-lower].setBackground(Color.WHITE);

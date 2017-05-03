@@ -25,8 +25,17 @@ public class FilesMgr {
 	
 	public FilesMgr(GUIMediator gui){
 		this.gui = gui;
+		model = gui.getModel();
 	}
 	
+	/*public MachineModel getModel() {
+		return model;
+	}
+
+	public void setModel(MachineModel model) {
+		this.model = model;
+	}*/
+
 	public void initialize(){
 		locateDefaultDirectory();
 		loadPropertiesFile();
@@ -192,11 +201,13 @@ public class FilesMgr {
 				System.out.println("Error writing properties file");
 			}			
 		}
+		
 		finalLoad_ReloadStep(job);
 	}
 	
 	void finalLoad_ReloadStep(Job job) {
 		gui.clearJob();
+		System.out.println(model + "  " +currentlyExecutingFile);
 		String str = Loader.load(model, currentlyExecutingFile, 
 				job.getStartcodeIndex(), job.getStartmemoryIndex());
 		try {

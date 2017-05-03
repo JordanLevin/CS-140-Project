@@ -328,11 +328,14 @@ public class MachineModel{
 			if(pc < currentJob.getStartcodeIndex() || pc >= currentJob.getStartcodeIndex() + currentJob.getCodeSize()){
 				throw new CodeAccessException();
 			}
+			
+			//ERROR IS HERE
 			int opcode = code.getOp(pc);
 			int indirLvl = code.getIndirLvl(pc);
+			System.out.println();
 			int arg = code.getArg(pc);
 			
-			IMAP.get(pc).execute(arg, indirLvl);
+			IMAP.get(opcode).execute(arg, indirLvl);
 			
 		} catch (Exception e){
 			callback.halt();
