@@ -3,6 +3,20 @@ package project;
 public class Code {
 	public static final int CODE_MAX = 1024;
 	private long[] code = new long[CODE_MAX];
+	public String getHex(int i){
+		int arg = Math.abs(getArg(i));
+		if(arg == getArg(i)){
+			return Integer.toHexString(getOp(i)).toUpperCase()
+			+ " " + Integer.toHexString(getIndirLvl(i)).toUpperCase()
+			+ " " + Integer.toHexString(arg).toUpperCase();
+		}
+		else {
+			return Integer.toHexString(getOp(i)).toUpperCase()
+			+ " " + Integer.toHexString(getIndirLvl(i)).toUpperCase()
+			+ " -" + Integer.toHexString(arg).toUpperCase();
+		}
+	}
+	
 	public void setCode(int index, int op, int indirLvl, int arg) {
 		// the opcode will use 29 bits, multiplying by
 		// 8 moves 3 bits to the left

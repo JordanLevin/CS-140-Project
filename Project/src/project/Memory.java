@@ -18,6 +18,9 @@ public class Memory{
 		changedIndex = -1;
 	}
 	//Part 1?
+	public int[] getData(){
+		return data;
+	}
 	public int getData(int index){
 		return data[index];
 	}

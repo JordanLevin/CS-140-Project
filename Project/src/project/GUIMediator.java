@@ -18,35 +18,35 @@ public class GUIMediator extends Observable {
 			} catch (CodeAccessException e) {
 				JOptionPane.showMessageDialog(
 					frame, 
-					"Illegal access to code from line " + model.getPCounter() + "\n"
+					"Illegal access to code from line " + model.getpCounter() + "\n"
 					+ "Exception message: " + e.getMessage(),
 					"Run time error",
 					JOptionPane.OK_OPTION);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				JOptionPane.showMessageDialog(
 						frame, 
-						"Illegal access to data from line " + model.getPCounter() + "\n"
+						"Illegal access to data from line " + model.getpCounter() + "\n"
 						+ "Exception message: " + e.getMessage(),
 						"Run time error",
 						JOptionPane.OK_OPTION);
 			} catch (NullPointerException e) {
 				JOptionPane.showMessageDialog(
 						frame, 
-						"NullPointerException from line " + model.getPCounter() + "\n"
+						"NullPointerException from line " + model.getpCounter() + "\n"
 						+ "Exception message: " + e.getMessage(),
 						"Run time error",
 						JOptionPane.OK_OPTION);
 			} catch (IllegalArgumentException e) {
 				JOptionPane.showMessageDialog(
 						frame, 
-						"Program error from line " + model.getPCounter() + "\n"
+						"Program error from line " + model.getpCounter() + "\n"
 						+ "Exception message: " + e.getMessage(),
 						"Run time error",
 						JOptionPane.OK_OPTION);
 			} catch (DivideByZeroException e) {
 				JOptionPane.showMessageDialog(
 						frame, 
-						"Divice by zero from line " + model.getPCounter() + "\n"
+						"Divice by zero from line " + model.getpCounter() + "\n"
 						+ "Exception message: " + e.getMessage(),
 						"Run time error",
 						JOptionPane.OK_OPTION);
@@ -64,35 +64,35 @@ public class GUIMediator extends Observable {
 			} catch (CodeAccessException e) {
 				JOptionPane.showMessageDialog(
 					frame, 
-					"Illegal access to code from line " + model.getPCounter() + "\n"
+					"Illegal access to code from line " + model.getpCounter() + "\n"
 					+ "Exception message: " + e.getMessage(),
 					"Run time error",
 					JOptionPane.OK_OPTION);
 			} catch (ArrayIndexOutOfBoundsException e) {
 				JOptionPane.showMessageDialog(
 						frame, 
-						"Illegal access to data from line " + model.getPCounter() + "\n"
+						"Illegal access to data from line " + model.getpCounter() + "\n"
 						+ "Exception message: " + e.getMessage(),
 						"Run time error",
 						JOptionPane.OK_OPTION);
 			} catch (NullPointerException e) {
 				JOptionPane.showMessageDialog(
 						frame, 
-						"NullPointerException from line " + model.getPCounter() + "\n"
+						"NullPointerException from line " + model.getpCounter() + "\n"
 						+ "Exception message: " + e.getMessage(),
 						"Run time error",
 						JOptionPane.OK_OPTION);
 			} catch (IllegalArgumentException e) {
 				JOptionPane.showMessageDialog(
 						frame, 
-						"Program error from line " + model.getPCounter() + "\n"
+						"Program error from line " + model.getpCounter() + "\n"
 						+ "Exception message: " + e.getMessage(),
 						"Run time error",
 						JOptionPane.OK_OPTION);
 			} catch (DivideByZeroException e) {
 				JOptionPane.showMessageDialog(
 						frame, 
-						"Divice by zero from line " + model.getPCounter() + "\n"
+						"Divice by zero from line " + model.getpCounter() + "\n"
 						+ "Exception message: " + e.getMessage(),
 						"Run time error",
 						JOptionPane.OK_OPTION);

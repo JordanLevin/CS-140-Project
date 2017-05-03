@@ -8,7 +8,7 @@ public class CPU{
 	public int getAccum(){
 		return accum;
 	}
-	public int getPCounter(){
+	public int getpCounter(){
 		return pCounter;
 	}
 	public int getMemBase(){
@@ -18,7 +18,7 @@ public class CPU{
 	public void setAccum(int accum){
 		this.accum = accum;
 	}
-	public void setPCounter(int pCounter){
+	public void setpCounter(int pCounter){
 		this.pCounter = pCounter;
 	}
 	public void setMemBase(int memBase){

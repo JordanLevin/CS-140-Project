@@ -52,9 +52,10 @@ public class MachineModel{
 					"Illegal indirection level in STO instruction");
 			}
 			if(level > 1) {
+				//System.out.println(memory.getData(cpu.getMemBase()));
 				IMAP.get(0x2).execute(memory.getData(cpu.getMemBase()+arg), level-1);
 			} else {
-				memory.setData(arg, cpu.getAccum());
+				memory.setData(cpu.getMemBase()+arg, cpu.getAccum());
 				cpu.incrPC();
 			}
 		});
@@ -134,10 +135,13 @@ public class MachineModel{
 		
 		//INSTRUCTION MAP entry for "NOT"
 		IMAP.put(0x8, (arg, level) ->{
+			if(level!=0)
+				throw new IllegalArgumentException();
 			if(cpu.getAccum() != 0)
 				cpu.setAccum(0);
 			else
 				cpu.setAccum(1);
+			cpu.incrPC();
 		});
 		
 		//INSTRUCTION MAP entry for "CMPL"
@@ -149,7 +153,7 @@ public class MachineModel{
 			if(level > 1) {
 				IMAP.get(0x9).execute(memory.getData(cpu.getMemBase()+arg), level-1);
 			} else {
-				if(memory.getData(cpu.getMemBase()) < 0)
+				if(memory.getData(cpu.getMemBase() + arg) < 0)
 					cpu.setAccum(1);
 				else
 					cpu.setAccum(0);
@@ -166,7 +170,7 @@ public class MachineModel{
 			if(level > 1) {
 				IMAP.get(0xA).execute(memory.getData(cpu.getMemBase()+arg), level-1);
 			} else {
-				if(memory.getData(cpu.getMemBase()) == 0)
+				if(memory.getData(cpu.getMemBase() + arg) == 0)
 					cpu.setAccum(1);
 				else
 					cpu.setAccum(0);
@@ -182,11 +186,11 @@ public class MachineModel{
 			}
 			if(level == 3){
 				int arg1 = memory.getData(cpu.getMemBase()+arg); // CORRECTION
-				cpu.setPCounter(arg1 + currentJob.getStartcodeIndex());   // CORRECTION
+				cpu.setpCounter(arg1 + currentJob.getStartcodeIndex());   // CORRECTION
 			} else if(level > 0) {
 				IMAP.get(0xB).execute(memory.getData(cpu.getMemBase()+arg), level-1);
 			} else {
-				cpu.setPCounter(cpu.getPCounter()+arg);
+				cpu.setpCounter(cpu.getpCounter()+arg);
 			}
 		});
 		
@@ -194,24 +198,24 @@ public class MachineModel{
 		IMAP.put(0xC, (arg, level) ->{
 			//TODO fix this up probably
 			if(cpu.getAccum() == 0){
-				int arg1 = memory.getData(cpu.getMemBase()+arg); // CORRECTION
-				cpu.setPCounter(arg1 + currentJob.getStartcodeIndex());   // CORRECTION
+				
+				if(level < 0 || level > 3) {
+					throw new IllegalArgumentException(
+						"Illegal indirection level in JMPZ instruction");
+				}
+				if(level == 3){
+					int arg1 = memory.getData(cpu.getMemBase()+arg); // CORRECTION
+					cpu.setpCounter(arg1 + currentJob.getStartcodeIndex());   // CORRECTION
+				} else if(level > 0) {
+					IMAP.get(0xC).execute(memory.getData(cpu.getMemBase()+arg), level-1);
+				} else {
+					cpu.setpCounter(cpu.getpCounter()+arg);
+				}
 			}
-			if(cpu.getAccum() == 1){
+			else{
 				cpu.incrPC();
-				return;
 			}
-			if(level < 0 || level > 3) {
-				throw new IllegalArgumentException(
-					"Illegal indirection level in JMPZ instruction");
-			}
-			if(level == 3){
-				cpu.setPCounter(arg); //not totally sure about this line
-			} else if(level > 0) {
-				IMAP.get(0xC).execute(memory.getData(cpu.getMemBase()+arg), level-1);
-			} else {
-				cpu.setPCounter(cpu.getPCounter()+arg);
-			}
+			
 		});
 		
 		//INSTRUCTION MAP entry for "HALT"
@@ -225,7 +229,7 @@ public class MachineModel{
 	}
 	
 	//is this right?
-	public Instruction getInstruction(Integer instruction){
+	public Instruction get(Integer instruction){
 		return IMAP.get(instruction);
 	}
 	
@@ -246,11 +250,11 @@ public class MachineModel{
 		}
 		else{
 			getCurrentJob().setCurrentAcc(cpu.getAccum());
-			getCurrentJob().setCurrentPC(cpu.getPCounter());
+			getCurrentJob().setCurrentPC(cpu.getpCounter());
 			currentJob = jobs[i];
 			cpu.setAccum(currentJob.getCurrentAcc());
 			cpu.setMemBase(currentJob.getStartmemoryIndex());
-			cpu.setPCounter(currentJob.getCurrentAcc());
+			cpu.setpCounter(currentJob.getCurrentAcc());
 		}
 	}
 
@@ -260,8 +264,8 @@ public class MachineModel{
 	public int getAccum() {
 		return cpu.getAccum();
 	}
-	public int getPCounter() {
-		return cpu.getPCounter();
+	public int getpCounter() {
+		return cpu.getpCounter();
 	}
 	public int getMemBase() {
 		return cpu.getMemBase();
@@ -269,8 +273,8 @@ public class MachineModel{
 	public void setAccum(int accum) {
 		cpu.setAccum(accum);
 	}
-	public void setPCounter(int pCounter) {
-		cpu.setPCounter(pCounter);
+	public void setpCounter(int pCounter) {
+		cpu.setpCounter(pCounter);
 	}
 	public void setMemBase(int memBase) {
 		cpu.setMemBase(memBase);
@@ -280,6 +284,9 @@ public class MachineModel{
 	}
 	public int getData(int index) {
 		return memory.getData(index);
+	}
+	public int[] getData(){
+		return memory.getData();
 	}
 	public void setData(int index, int value) {
 		memory.setData(index, value);
@@ -310,13 +317,13 @@ public class MachineModel{
 		memory.clear(currentJob.getStartmemoryIndex(), currentJob.getStartmemoryIndex() + Memory.DATA_SIZE/4);
 		code.clear(currentJob.getStartcodeIndex(), currentJob.getStartcodeIndex() + currentJob.getCodeSize());
 		cpu.setAccum(0);
-		cpu.setPCounter(currentJob.getStartcodeIndex());
+		cpu.setpCounter(currentJob.getStartcodeIndex());
 		currentJob.reset();
 	}
 	
 	public void step(){
 		try{
-			int pc = cpu.getPCounter();
+			int pc = cpu.getpCounter();
 			//TODO make sure this inclusive/exclusive is right
 			if(pc < currentJob.getStartcodeIndex() || pc >= currentJob.getStartcodeIndex() + currentJob.getCodeSize()){
 				throw new CodeAccessException();
