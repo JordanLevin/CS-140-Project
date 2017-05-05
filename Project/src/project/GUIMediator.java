@@ -18,7 +18,7 @@ public class GUIMediator extends Observable {
 	private MemoryViewPanel memoryViewPanel3;
 	
 	private ControlPanel controlPanel; // Project Part 1?
-	//private ProcessorViewPanel processorPanel; // Project Part 1?
+	private ProcessorViewPanel processorPanel; // Project Part 1?
 	private MenuBarBuilder menuBuilder; // Project Part 12
 	
 	private FilesMgr filesMgr;
@@ -220,7 +220,7 @@ public class GUIMediator extends Observable {
 		memoryViewPanel3 = new MemoryViewPanel(this, model, Memory.DATA_SIZE/2, Memory.DATA_SIZE);
 	
 		controlPanel = new ControlPanel(this);
-		//processorPanel = new ProcessorViewPanel(this, model);
+		processorPanel = new ProcessorViewPanel(this, model);
 		menuBuilder = new MenuBarBuilder(this);
 		
 		frame = new JFrame("Simulator");
@@ -239,13 +239,22 @@ public class GUIMediator extends Observable {
 		center.setLayout(new GridLayout(1, 3));
 		
 		frame.add(codeViewPanel.createCodeDisplay(), BorderLayout.LINE_START);
+		frame.add(processorPanel.createProcessorDisplay(),BorderLayout.PAGE_START);
 		frame.add(controlPanel.createControlDisplay(), BorderLayout.PAGE_END);
 		center.add(memoryViewPanel1.createMemoryDisplay());
 		center.add(memoryViewPanel2.createMemoryDisplay());
 		center.add(memoryViewPanel3.createMemoryDisplay());
 		frame.add(center);
 		//return here for other gui components
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.addWindowListener(WindowListenerFactory.windowClosingFactory(e -> exit())); 
+		frame.setLocationRelativeTo(null);
+		model.setCurrentState(States.NOTHING_LOADED);
+		stepControl.start();
+		model.getCurrentState().enter();
+		setChanged();
+		notifyObservers();
 		//return here for other setup details
 		frame.setVisible(true);
 		
