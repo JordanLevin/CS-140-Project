@@ -102,7 +102,7 @@ public class MachineModel{
 		//INSTRUCTION MAP entry for "DIV"
 		IMAP.put(0x6, (arg, level) -> {
 			if(arg == 0){
-				throw new DivideByZeroException();
+				throw new DivideByZeroException("Divide by zero");
 			}
 			if(level < 0 || level > 2) {
 				throw new IllegalArgumentException(
@@ -198,7 +198,6 @@ public class MachineModel{
 		IMAP.put(0xC, (arg, level) ->{
 			//TODO fix this up probably
 			if(cpu.getAccum() == 0){
-				
 				if(level < 0 || level > 3) {
 					throw new IllegalArgumentException(
 						"Illegal indirection level in JMPZ instruction");
@@ -326,10 +325,9 @@ public class MachineModel{
 			int pc = cpu.getpCounter();
 			//TODO make sure this inclusive/exclusive is right
 			if(pc < currentJob.getStartcodeIndex() || pc >= currentJob.getStartcodeIndex() + currentJob.getCodeSize()){
-				throw new CodeAccessException();
+				throw new CodeAccessException("Illegal Access outside of executing code");
 			}
 			
-			//ERROR IS HERE
 			int opcode = code.getOp(pc);
 			int indirLvl = code.getIndirLvl(pc);
 			System.out.println();
