@@ -1,4 +1,4 @@
 #File locations
-#Sat May 06 22:31:41 EDT 2017
-ExecutableDirectory=/home/jordan/Downloads/data/
+#Wed May 10 13:24:11 EDT 2017
+ExecutableDirectory=/home/jordan/Desktop/CS-work/CS-140-Project/Project/
 SourceDirectory=/home/jordan/Desktop/CS-work/CS-140-Project/Project/

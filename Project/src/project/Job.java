@@ -2,7 +2,7 @@ package project;
 
 public class Job {
 	private int id, startcodeIndex, codeSize, startmemoryIndex, currentPC, currentAcc;
-	private States currentState;
+	private States currentState = States.NOTHING_LOADED;
 	
 	void reset(){
 		setCodeSize(0);

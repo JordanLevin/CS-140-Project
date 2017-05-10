@@ -23,7 +23,7 @@ public class FilesMgr {
 	private String executableDir; // stored directory for pexe assembled files
 	private Properties properties = null; // java.util.Properties<br />
 	// Java method for persistent program properties
-	private File currentlyExecutingFile = null; // java.io.File<br />
+	private File[] currentlyExecutingFile = new File[4]; // PART 16 FIX
 	
 	public FilesMgr(GUIMediator gui){
 		this.gui = gui;
@@ -191,6 +191,7 @@ public class FilesMgr {
 	}
 	
 	public void loadFile(Job job) {
+		int index = job.getId(); // part 16 fix
 		JFileChooser chooser = new JFileChooser(executableDir);
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 				"Pippin Executable Files", "pexe");
@@ -198,11 +199,14 @@ public class FilesMgr {
 		// CODE TO LOAD DESIRED FILE
 		int openOK = chooser.showOpenDialog(null);
 		if(openOK == JFileChooser.APPROVE_OPTION) {
-			currentlyExecutingFile = chooser.getSelectedFile();
+			currentlyExecutingFile[index] = chooser.getSelectedFile();
 		}
-		if(currentlyExecutingFile != null && currentlyExecutingFile.exists()) {
+		if(openOK == JFileChooser.CANCEL_OPTION) {
+			currentlyExecutingFile[index] = null;
+		}
+		if(currentlyExecutingFile[index] != null && currentlyExecutingFile[index].exists()) {
 			// CODE TO REMEMBER WHICH DIRECTORY HAS THE pexe FILES
-			executableDir = currentlyExecutingFile .getAbsolutePath();
+			executableDir = currentlyExecutingFile[index].getAbsolutePath();
 			executableDir = executableDir.replace('\\','/');
 			int lastSlash = executableDir.lastIndexOf('/');
 			executableDir = executableDir.substring(0, lastSlash + 1);
@@ -216,14 +220,21 @@ public class FilesMgr {
 			}			
 		}
 		
-		finalLoad_ReloadStep(job);
+		if(currentlyExecutingFile[index] != null) finalLoad_ReloadStep(job);
+		else 
+			JOptionPane.showMessageDialog(
+					gui.getFrame(),  
+					"No file selected.\n" +
+							"Cannot load the program",
+							"Warning",
+							JOptionPane.OK_OPTION);
 	}
 	
 	void finalLoad_ReloadStep(Job job) {
 		gui.clearJob();
-		System.out.println(model + "  " +currentlyExecutingFile);
-		String str = Loader.load(model, currentlyExecutingFile, 
-				job.getStartcodeIndex(), job.getStartmemoryIndex());
+		//System.out.println(model + "  " +currentlyExecutingFile[index]);
+		String str = Loader.load(model, currentlyExecutingFile[job.getId()], 
+                job.getStartcodeIndex(), job.getStartmemoryIndex());
 		try {
 			int len = Integer.parseInt(str);
 			job.setCodeSize(len);

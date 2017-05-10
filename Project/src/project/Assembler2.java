@@ -159,7 +159,7 @@ public class Assembler2 {
 				String dataLine = "";
 				try {
 					arg0 = Integer.parseInt(parts[0],16);
-					dataLine += arg0 + " ";
+					dataLine += parts[0] + " ";
 				} catch (NumberFormatException e) {
 					err = true;
 					errors.add("Error: line " + (index+1+code.size()) 
@@ -167,7 +167,7 @@ public class Assembler2 {
 				}
 				try {
 					arg = Integer.parseInt(parts[1],16);
-					dataLine += arg;
+					dataLine += parts[1];
 				} catch (NumberFormatException e) {
 					err = true;
 					errors.add("Error: line " + (index+1+code.size()) 

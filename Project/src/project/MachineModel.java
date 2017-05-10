@@ -23,6 +23,7 @@ public class MachineModel{
 			jobs[i].setId(i);
 			jobs[i].setStartcodeIndex(i*Code.CODE_MAX/4);
 			jobs[i].setStartmemoryIndex(i*Memory.DATA_SIZE/4);
+			jobs[i].getCurrentState().enter();
 		}
 		
 		//INSTRUCTION MAP entry for "NOP"
@@ -253,7 +254,7 @@ public class MachineModel{
 			currentJob = jobs[i];
 			cpu.setAccum(currentJob.getCurrentAcc());
 			cpu.setMemBase(currentJob.getStartmemoryIndex());
-			cpu.setpCounter(currentJob.getCurrentAcc());
+			cpu.setpCounter(currentJob.getCurrentPC());
 		}
 	}
 
